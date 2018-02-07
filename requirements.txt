@@ -1,0 +1,8 @@
+twilio
+Flask
+pymysql
+myfitnesspal
+passlib
+flask-sqlalchemy
+flask_httpauth
+flask-cors

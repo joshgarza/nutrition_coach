@@ -1,0 +1,6 @@
+config.*
+__pycache__
+frontend/node_modules
+venv
+.DS_Store
+Measurebot/notes

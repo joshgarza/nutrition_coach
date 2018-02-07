@@ -1,0 +1,85 @@
+
+<body>
+    
+    
+    <form id="login" v-on:submit.prevent="loginUser" >
+        <!--<input v-model="message" placeholder="edit me">-->
+        <input v-model="username" type="text" placeholder="Enter Username" required>
+        <input v-model="password" type="password" placeholder="Enter Password" required>
+        <button type="submit">Submit</button>
+    </form>
+    
+    <p id="user">This is the user page</p>
+</body>
+
+<script src="https://unpkg.com/vue@2.5.3/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.js"></script>
+
+<script>
+
+    var store = {
+        user: {
+            token: '',
+        },
+        updateTokenAction (username, password) {
+            console.log(username, password);
+            this_store = this;
+            axios({
+                headers: {'Authorization': 'Basic ' + window.btoa(unescape(encodeURIComponent( username + ":" + password)))},
+                url:"/token",
+                type: 'GET',
+            }).then(function(response) {
+                this_store.user.token = response.data.token;
+            }).catch(function(error) {
+                console.log(error);
+            });
+        },
+    };
+
+    const routes = [
+        { path: '/login', component: login },
+        { path: '/user', component: user },
+    ]
+    
+    const router = new VueRouter({
+        routes
+    });
+
+    var login = new Vue({
+        el: '#login',
+        data: {
+            sharedState: store.user,
+            username: '',
+            password: '',
+        },
+        methods: {
+            loginUser: function(event) {
+                console.log(this.username);
+                console.log(this.password);
+                login_info = {'username': this.username, 'password': this.password};
+                this_method = this;
+                axios({
+                  method: 'post',
+                  url: '/users',
+                  data: login_info,
+                  contentType: 'application/json; charset=utf-8',
+                  dataType: 'json',
+                  type: 'POST',
+                }).then(function(response) {
+                    console.log(response);
+                    store.updateTokenAction(this_method.username, this_method.password);
+                    router.push('user');
+                }).catch(function(error){
+                    console.log(error);
+                });
+            }
+        }
+    });
+
+    var user = new Vue({
+        el: "#user",
+        
+    });
+</script>
+
