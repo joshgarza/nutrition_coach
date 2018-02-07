@@ -9,7 +9,7 @@
                 <th>Carbs</th>
                 <th>Fat</th>
             </tr>
-           
+
             <tr v-for="goal in goals">
                 <td>{{ goal.date }}</td>
                 <td>{{ goal.calories }}</td>
@@ -18,7 +18,7 @@
                 <td>{{ goal.fat }}</td>
             </tr>
         </table>
-    </div> 
+    </div>
 </template>
 
 <script>
