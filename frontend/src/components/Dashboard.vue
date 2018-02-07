@@ -1,5 +1,9 @@
 <template>
     <div class="dashboard">
+        <ul>
+          <h4 id="title">Nutrition Coach</h4>
+          <li><a v-on:click='logout'>Log Out</a></li>
+        </ul>
         <goals v-bind:goals="goals" v-bind:token="token"></goals>
         <goals-form v-on:updategoals='fetchGoals' v-bind:token="token"></goals-form>
         <macros v-bind:token="token"></macros>
@@ -24,7 +28,12 @@
         Macros
       },
       created: function () {
-        this.fetchGoals()
+        if (this.token === '') {
+          alert('You need to log in first!')
+          this.$router.push('login')
+        } else {
+          this.fetchGoals()
+        }
       },
       methods: {
         fetchGoals: function () {
@@ -38,6 +47,9 @@
           }).catch((error) => {
             console.log(error)
           })
+        },
+        logout: function () {
+          this.$emit('logout')
         }
       },
       watch: {

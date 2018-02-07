@@ -7,7 +7,7 @@
             <input v-model="fat" type="text" placeholder="Enter Fat" required>
             <button type="submit">Submit</button>
         </form>
-    </div> 
+    </div>
 </template>
 
 <script>

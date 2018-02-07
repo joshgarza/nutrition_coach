@@ -1,12 +1,6 @@
 <template>
   <div id="app">
-    <ul>
-      <li><router-link to="/login">Log In</router-link></li>
-      <li><router-link to="/signup">Signup</router-link></li>
-      <li id="dashboard"><router-link to="/dashboard">Dashboard</router-link></li>
-      <h4 id="title">Nutrition Coach</h4>
-    </ul>
-    <router-view v-on:loginsuccess='storeToken' v-bind:token="token"/>
+    <router-view v-on:loginsuccess='storeToken' v-on:logout='logout' v-bind:token="token"/>
   </div>
 </template>
 
@@ -22,12 +16,18 @@ export default {
     this.token = localStorage.getItem('userToken')
     if (this.token) {
       this.$router.push('dashboard')
+    } else {
+      this.$router.push('login')
     }
   },
   methods: {
     storeToken: function (token) {
       this.token = token
       localStorage.setItem('userToken', token)
+    },
+    logout: function () {
+      localStorage.setItem('userToken', '')
+      this.$router.push('login')
     }
   },
   watch: {
