@@ -6,3 +6,5 @@ passlib
 flask-sqlalchemy
 flask_httpauth
 flask-cors
+numpy
+matplotlib
