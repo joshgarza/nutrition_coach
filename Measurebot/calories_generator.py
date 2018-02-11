@@ -23,8 +23,8 @@ def best_fit_slope(xs, ys):
     return m
 
 # here we set m1 to the slope of our first data set and m2 to the slope of our second data set
-m1 = best_fit_slope_and_intercept(days1, bw1)
-m2 = best_fit_slope_and_intercept(days2, bw2)
+m1 = best_fit_slope(days1, bw1)
+m2 = best_fit_slope(days2, bw2)
 
 # this divides the difference between mean calories and our slopes. the result is the approximate calorie per lb figure
 cal_per_lb = (mean_cal1 - mean_cal2)/(m1-m2)
