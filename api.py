@@ -4,6 +4,8 @@ from datetime import date
 
 from app import app, db
 from models import User, Goals, DailyTotals
+from calories_generator import *
+
 
 auth = HTTPBasicAuth()
 
@@ -101,4 +103,9 @@ def macros():
     macros = DailyTotals.query.filter_by(user_id=g.user.id).limit(7).all()
     print(macros)
 
-    return jsonify([m.as_dict() for m in macros]), 200        
+    return jsonify([m.as_dict() for m in macros]), 200  
+
+@app.route("/generator", methods=['POST'])     
+@auth.login_required
+def generate_macros():
+    return True

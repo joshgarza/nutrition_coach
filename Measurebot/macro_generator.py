@@ -4,7 +4,7 @@ fat = 0
 total_calories = 0
 bodyweight = 220
 
-# fetch calories from calories_generator
+# fetch weekly_calories from calories_generator
 # write function to allocate total calories into training and rest days
 training_day = {
     "protein_mult": .8,
@@ -22,7 +22,7 @@ rest_day = {
     "fat_mult": .3,
     "goal_calories": 1500, 
     "min_protein_mult": .5,
-    "min_fat_mult": .1,
+    "min_fat_mult": .1, 
     "max_protein_mult": 1.25
     }
 
