@@ -84,3 +84,13 @@ class DailyTotals(db.Model):
 
     def calc_calories(self):
         self.calories = self.protein*4 + self.carbs*4 + self.fat*9
+
+class Measurements(db.Model):
+    user_id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False, primary_key=True, default=None)
+    weight = db.Column(db.Integer, nullable=False, default=0)  
+
+    def __init__(self, user_id, date, weight=0):
+        self.user_id = user_id
+        self.date = date
+        self.weight = weight

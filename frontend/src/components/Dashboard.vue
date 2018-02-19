@@ -6,6 +6,7 @@
         </ul>
         <goals v-bind:goals="goals" v-bind:token="token"></goals>
         <goals-form v-on:updategoals='fetchGoals' v-bind:token="token"></goals-form>
+        <generator v-bind:token="token"></generator>
         <macros v-bind:token="token"></macros>
     </div>
 </template>
@@ -14,6 +15,7 @@
     import Goals from '@/components/Goals'
     import Macros from '@/components/Macros'
     import GoalsForm from '@/components/GoalsForm'
+    import Generator from '@/components/Generator'
     import axios from 'axios'
     export default {
       props: ['token'],
@@ -25,7 +27,8 @@
       components: {
         GoalsForm,
         Goals,
-        Macros
+        Macros,
+        Generator
       },
       created: function () {
         if (this.token === '') {

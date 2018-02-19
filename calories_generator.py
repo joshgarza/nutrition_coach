@@ -1,9 +1,9 @@
 from statistics import mean
 import numpy as np
 
-dates = np.array([1, 3, 7, 8, 10, 13, 15, 17, 20, 22, 24, 29, 31, 34, 35, 38, 41, 48, 50, 51, 56, 57], dtype=np.float64)
-weights = np.array([259.2, 258.2, 259, 258.8, 258.4, 257.8, 258.4, 257.4, 256.8, 257.4, 256, 254, 253.4, 253.6, 252.8, 251.4, 251.2, 249.6, 248.8, 248, 246.2, 245.4], dtype=np.float64)
-calories = np.array([3167.142857, 3167.142857, 3167.142857, 3167.142857, 3167.142857, 3167.142857, 3167.142857, 3167.142857, 3167.142857, 3167.142857, 3167.142857, 2480, 2480, 2480, 2480, 2480, 2480, 2480, 2480, 2480, 2480, 2480], dtype=np.float64)
+# dates = np.array([1,2,3,4,5,6], dtype=np.float64)
+# weights = np.array([153.2,152.8,153.6,153.4,153.6,153.6], dtype=np.float64)
+# calories = np.array([1268,1268,1268,1268,1268,1268], dtype=np.float64)
 
 # takes dates, weights, calories, "training_cycle"
 class MacrosGenerator():
@@ -37,10 +37,15 @@ class MacrosGenerator():
         }
 
     def __init__(self, dates, weights, calories, training_cycle):
+        # iterate through dates, weights, and calories and create new np.array for each
+        # this isn't appending to the list i want. it should append to self.dates as a np.array.
+        # for d in dates:
+        #     np.append(self.dates, [d])
+        # print(self.dates)
         self.dates = dates
         self.weights = weights
         self.calories = calories
-        # self.training_cycle = training_cycle
+        self.training_cycle = training_cycle
         
         date_list1 = dates[:len(dates)//2]
         date_list2 = dates[len(dates)//2:]
@@ -68,8 +73,11 @@ class MacrosGenerator():
         self.assignment = self.macro_generator(self.total_calories, self.goal_calories, self.bodyweight)
 
     def best_fit_slope(self, dates, weights):
+        # print(dates)
+        # print(weights)
         m = ((((mean(dates)*mean(weights)) - mean(dates*weights)) /
              ((mean(dates)*mean(dates)) - mean(dates*dates))))*7
+        # print(m)
         return m
 
     def calc_cal_per_lb(self, slope1, slope2, mean_cal1, mean_cal2):
