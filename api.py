@@ -109,10 +109,8 @@ def macros():
     return jsonify([m.as_dict() for m in macros]), 200  
 
 @app.route("/generator", methods=['POST'])     
-# @auth.login_required
+@auth.login_required
 def generate_macros():
-    # Need to format date to int or something that MacrosGenerator can take
-    # training cycle still needs to be added to some table
     list_dates = []
     list_weights = []
     list_calories = []
@@ -120,8 +118,6 @@ def generate_macros():
 
     macros = DailyTotals.query.filter_by(user_id=1).limit(14).all()
     measurements = Measurements.query.filter_by(user_id=1).limit(14).all() 
-
-    # x = np.append(x, [[40, 50, 60], [70, 80, 90]])
 
     for m in macros:
         list_dates.append(m.date.toordinal())
@@ -134,11 +130,4 @@ def generate_macros():
     weights = np.asarray(list_weights)
     calories = np.asarray(list_calories)
 
-    # print(dates)
-    # print(weights)
-    # print(calories)
-    
-    # b = MacrosGenerator(dates, weights, calories, training_cycle).assignment
-    # print("This is the generator")
-    # print(b)
     return jsonify(MacrosGenerator(dates, weights, calories, training_cycle).assignment)
