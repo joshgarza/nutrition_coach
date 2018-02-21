@@ -13,18 +13,20 @@ from calories_generator import MacrosGenerator
 auth = HTTPBasicAuth()
 
 @auth.verify_password
-def verify_password(username_or_token, password):
+def verify_password(email_or_token, password):
     print("In verify password")
-    user_id = User.verify_auth_token(username_or_token)
+    user_id = User.verify_auth_token(email_or_token)
     print(user_id)
     if user_id:
         user = User.query.filter_by(id=user_id).first()
         print(user)
     else:
-        user = User.query.filter_by(username=username_or_token).first()
+        user = User.query.filter_by(email=email_or_token).first()
         print(user)
         if (not user) and (not user.verify_password(password)):
             return False
+    if not user.account_activated:
+        return False
     g.user = user
     print(g.user)
     return True
@@ -37,25 +39,42 @@ def home():
 @app.route("/users", methods=['GET', 'POST'])
 def new_user():
     if request.method == 'POST':
-        username = request.json.get('username')
+        email = request.json.get('email')
         password = request.json.get('password')
-        if not username or not password:
+
+        if not email or not password:
             abort(400)
         
-        # existing_user = User.query.filter_by(username = username).first()
-        # if existing_user is not None:
-        #     print("existing user")
-        #     #FIXME: This should verify password, revisit when building login
-        #     return jsonify({'message':'user already exists'}), 200
-            
-        user = User(username = username)
-        user.hash_password(password)
+        try:
+            user = User(email=email, password=password)
+            # user.hash_password(password)
+            db.session.add(user)
+            db.session.commit()
+            activation_key = user.generate_activation_key()
+            activation_url = "/activate/" + activation_key.decode('ascii')
+            goal = Goals(user_id = user.id)
+            db.session.add(goal)
+            db.session.commit()
+            return jsonify({'email': user.email, 'user_id': user.id, 'activation_url': activation_url}), 201
+        except Exception as e:
+            print(e)
+            abort(422)
+
+@app.route("/activate/<activation_key>")
+def activate_user(activation_key):
+    user_id = User.verify_activation_key(activation_key)
+    # print(user_id)
+    if user_id:
+        user = User.query.filter_by(id=user_id).first()
+        user.account_activated = True
+        user.activated_at = datetime.datetime.now()
         db.session.add(user)
         db.session.commit()
-        goal = Goals(user_id = user.id)
-        db.session.add(goal)
-        db.session.commit()
-        return jsonify({'username': user.username, 'user_id': user.id}), 201
+        print(user)
+    else:
+        abort(400)
+
+
 
 @app.route("/token")
 @auth.login_required
@@ -67,7 +86,7 @@ def get_auth_token():
 @app.route("/user")
 @auth.login_required
 def user():
-    return jsonify({'username': g.user.username, 'user_id': g.user.id}), 200
+    return jsonify({'email': g.user.email, 'user_id': g.user.id}), 200
     
     
 @app.route("/goals")

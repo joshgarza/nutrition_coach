@@ -3,10 +3,12 @@
         <logged-out-header></logged-out-header>
         <h1>Login Form</h1>
         <form id="login" v-on:submit.prevent="loginUser" >
-            <input v-model="username" type="text" placeholder="Enter Username" required>
+            <input v-model="email" type="text" placeholder="Enter Email" required>
             <input v-model="password" type="password" placeholder="Enter Password" required>
             <button type="submit">Submit</button>
+            <button v-on:click="resetPassword">Reset Password</button>
         </form>
+
     </div>
 </template>
 
@@ -18,7 +20,7 @@
         name: 'login',
         data: function() {
             return {
-                username: '',
+                email: '',
                 password: '',
             }
         },
@@ -27,10 +29,13 @@
         },
         methods: {
             loginUser: function(evt) {
-                auth.login(this.username, this.password, (token) => {
+                auth.login(this.email, this.password, (token) => {
                     this.$emit('loginsuccess', token);
                     this.$router.push('dashboard')
                 });
+            },
+            resetPassword: function(evt) {
+                // reset password logic
             }
         }
     }

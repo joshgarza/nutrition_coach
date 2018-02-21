@@ -3,32 +3,72 @@ from passlib.apps import custom_app_context as pwd_context
 from itsdangerous import(TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from datetime import date
 import random, string
+from email_validator import validate_email, EmailNotValidError
 
 
-secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
-
+auth_secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+activate_secret_key = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(32))
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(32), unique=True, index=True)
+    email = db.Column(db.String(256), unique=True, index=True)
     password_hash = db.Column(db.String(256))
     phone_number = db.Column(db.String(20), unique=True)
+    account_activated = db.Column(db.Boolean, default=False)
+    activated_at = db.Column(db.DateTime)
+
+    def __init__(self, email, password):
+        try:
+            v = validate_email(email) # validate and get info
+            self.email = v["email"] # replace with normalized form
+        except EmailNotValidError as e:
+            # email is not valid, exception message is human-readable
+            raise(e)
+
+        self.password_hash = self.hash_password(password)
 
     def hash_password(self, password):
-        self.password_hash = pwd_context.encrypt(password)
+        return pwd_context.encrypt(password)
 
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
     def generate_auth_token(self, expiration=60000):
-        s = Serializer(secret_key, expires_in = expiration)
-        return s.dumps({'id': self.id })
+        s1 = Serializer(auth_secret_key, expires_in = expiration)
+        return s1.dumps({'id': self.id })
+
+    def generate_activation_key(self, expiration=86400):
+        s2 = Serializer(activate_secret_key, expires_in = expiration)
+        activation_key = s2.dumps({'id': self.id })
+        print(activation_key + "generate")
+        return activation_key
+
+    @staticmethod
+    def verify_activation_key(activation_key):
+        s2 = Serializer(activate_secret_key)
+        # print(s.loads(activation_key))
+        try:
+            print(activation_key + "verify")
+            data = s2.loads(activation_key)
+
+        except SignatureExpired as e:
+            print("SignatureExpired")
+            print(e)
+            #Valid Token, but expired
+            return None
+        except BadSignature as e:
+            print("BadSignature")
+            print(e)
+            #Invalid Token
+            return None
+        user_id = data['id']
+        return user_id
 
     @staticmethod
     def verify_auth_token(token):
-    	s = Serializer(secret_key)
+    	s1 = Serializer(auth_secret_key)
     	try:
-    		data = s.loads(token)
+    		data = s1.loads(token)
     	except SignatureExpired as e:
             print(e)
             #Valid Token, but expired
