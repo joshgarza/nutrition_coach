@@ -14,7 +14,6 @@ auth = HTTPBasicAuth()
 
 @auth.verify_password
 def verify_password(email_or_token, password):
-    print("In verify password")
     user_id = User.verify_auth_token(email_or_token)
     print(user_id)
     if user_id:
@@ -51,7 +50,7 @@ def new_user():
             db.session.add(user)
             db.session.commit()
             activation_key = user.generate_activation_key()
-            activation_url = "/activate/" + activation_key.decode('ascii')
+            activation_url = "/activate/" + activation_key
             goal = Goals(user_id = user.id)
             db.session.add(goal)
             db.session.commit()
@@ -71,6 +70,7 @@ def activate_user(activation_key):
         db.session.add(user)
         db.session.commit()
         print(user)
+        return jsonify({'user_id': user.id})
     else:
         abort(400)
 
@@ -80,8 +80,7 @@ def activate_user(activation_key):
 @auth.login_required
 def get_auth_token():
     token = g.user.generate_auth_token()
-    print(token.decode('ascii'))
-    return jsonify({'token': token.decode('ascii')})
+    return jsonify({'token': token})
 
 @app.route("/user")
 @auth.login_required

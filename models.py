@@ -1,6 +1,6 @@
 from app import db
 from passlib.apps import custom_app_context as pwd_context
-from itsdangerous import(TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
+from itsdangerous import(URLSafeTimedSerializer as Serializer, BadSignature, SignatureExpired)
 from datetime import date
 import random, string
 from email_validator import validate_email, EmailNotValidError
@@ -33,23 +33,24 @@ class User(db.Model):
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
-    def generate_auth_token(self, expiration=60000):
-        s1 = Serializer(auth_secret_key, expires_in = expiration)
+    def generate_auth_token(self):
+        s1 = Serializer(auth_secret_key)
         return s1.dumps({'id': self.id })
 
-    def generate_activation_key(self, expiration=86400):
-        s2 = Serializer(activate_secret_key, expires_in = expiration)
+    def generate_activation_key(self):
+        s2 = Serializer(activate_secret_key)
         activation_key = s2.dumps({'id': self.id })
-        print(activation_key + "generate")
+        # print(activation_key + "generate")
         return activation_key
 
     @staticmethod
     def verify_activation_key(activation_key):
         s2 = Serializer(activate_secret_key)
         # print(s.loads(activation_key))
+        # print(s2.loads(activation_key))
         try:
-            print(activation_key + "verify")
-            data = s2.loads(activation_key)
+            print(activation_key + " verify")
+            data = s2.loads(activation_key, max_age=86400)
 
         except SignatureExpired as e:
             print("SignatureExpired")
@@ -68,7 +69,7 @@ class User(db.Model):
     def verify_auth_token(token):
     	s1 = Serializer(auth_secret_key)
     	try:
-    		data = s1.loads(token)
+    		data = s1.loads(token, max_age=86400)
     	except SignatureExpired as e:
             print(e)
             #Valid Token, but expired
