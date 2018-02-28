@@ -1,9 +1,9 @@
 from statistics import mean
 import numpy as np
 
-# dates = np.array([1,2,3,4,5,6], dtype=np.float64)
-# weights = np.array([153.2,152.8,153.6,153.4,153.6,153.6], dtype=np.float64)
-# calories = np.array([1268,1268,1268,1268,1268,1268], dtype=np.float64)
+dates = np.array([1,2,3,4,5,6,7], dtype=np.float64)
+weights = np.array([220,220,220,220,220,220,220], dtype=np.float64)
+calories = np.array([3400,3400,3400,3400,3400,3400,3400], dtype=np.float64)
 
 # takes dates, weights, calories, "training_cycle"
 class MacrosGenerator():

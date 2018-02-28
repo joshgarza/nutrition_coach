@@ -4,8 +4,9 @@ from datetime import datetime, date
 import datetime, time, calendar
 from statistics import mean
 import numpy as np
+from flask_mail import Message
 
-from app import app, db
+from app import app, db, mail
 from models import User, Goals, DailyTotals, Measurements
 from calories_generator import MacrosGenerator
 
@@ -24,8 +25,8 @@ def verify_password(email_or_token, password):
         print(user)
         if (not user) and (not user.verify_password(password)):
             return False
-    if not user.account_activated:
-        return False
+    # if not user.account_activated:
+        # return False
     g.user = user
     print(g.user)
     return True
@@ -50,7 +51,13 @@ def new_user():
             db.session.add(user)
             db.session.commit()
             activation_key = user.generate_activation_key()
-            activation_url = "/activate/" + activation_key
+            activation_url = "http://localhost:8081/activate/" + activation_key
+            msg = Message(
+                              sender="josh@sf-iron.com",
+                              subject='testing',
+                              body='Activation URL: ' + activation_url,
+                              recipients=["josh@sf-iron.com"])
+            mail.send(msg)
             goal = Goals(user_id = user.id)
             db.session.add(goal)
             db.session.commit()
