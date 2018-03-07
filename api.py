@@ -25,8 +25,8 @@ def verify_password(email_or_token, password):
         print(user)
         if (not user) and (not user.verify_password(password)):
             return False
-    # if not user.account_activated:
-        # return False
+    if not user.account_activated:
+        return False
     g.user = user
     print(g.user)
     return True
@@ -53,7 +53,7 @@ def new_user():
             activation_key = user.generate_activation_key()
             activation_url = "http://localhost:8081/activate/" + activation_key
             msg = Message(
-                              sender="josh@sf-iron.com",
+                              sender=app.config['MAIL_USERNAME'],
                               subject='testing',
                               body='Activation URL: ' + activation_url,
                               recipients=["josh@sf-iron.com"])

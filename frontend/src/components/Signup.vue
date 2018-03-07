@@ -28,9 +28,9 @@
         },
         methods: {
             signupUser: function(evt) {
-                auth.createUser(this.email, this.password, (token) => {
-                    this.$emit('loginsuccess', token);
-                    this.$router.push('Dashboard')
+                auth.createUser(this.email, this.password, (response) => {
+                    this.$emit('confirmationsent', this.email);
+                    this.$router.push('Confirm')
                 });
             }
         }

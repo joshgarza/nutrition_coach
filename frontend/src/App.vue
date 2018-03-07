@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view v-on:loginsuccess='storeToken' v-on:logout='logout' v-bind:token="token"/>
+    <router-view v-on:loginsuccess='storeToken' v-on:confirmationsent='storeEmail' v-on:logout='logout' v-bind:token="token" v-bind:email="email"/>
   </div>
 </template>
 
@@ -9,7 +9,8 @@ export default {
   name: 'app',
   data: function () {
     return {
-      'token': ''
+      'token': '',
+      'email': ''
     }
   },
   created: function () {
@@ -28,6 +29,9 @@ export default {
     logout: function () {
       localStorage.setItem('userToken', '')
       this.$router.push('login')
+    },
+    storeEmail: function (email) {  
+      this.email = email
     }
   },
   watch: {

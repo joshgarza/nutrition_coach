@@ -25,17 +25,8 @@ export default {
           dataType: 'json',
           type: 'POST'
         }).then(function(response) {
-            console.log(response);
-            axios({
-                headers: {'Authorization': 'Basic ' + window.btoa(unescape(encodeURIComponent( email + ":" + password))),
-                },
-                url:"http://localhost:8081/token",
-                type: 'GET'
-            }).then(function(response) {
-                 callback(response.data.token);
-            }).catch(function(error) {
-                console.log(error);
-            });
+            console.log(response)
+            callback(response)
         }).catch(function(error){
             console.log(error);
         });
