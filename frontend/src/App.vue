@@ -18,7 +18,7 @@ export default {
     if (this.token) {
       this.$router.push('dashboard')
     } else {
-      this.$router.push('login')
+      // this.$router.push('login')
     }
   },
   methods: {

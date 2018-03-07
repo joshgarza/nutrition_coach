@@ -31,5 +31,18 @@ export default {
             console.log(error);
         });
         
+    },
+
+    activateUser (token, callback, error_callback) {
+        axios({
+          type: 'GET',
+          url: 'http://localhost:8081/user-activation/' + token,
+        }).then(function(response) {
+            console.log(response)
+            callback(response)
+        }).catch(function(error){
+            console.log(error)
+            error_callback(error);
+        });
     }
 }

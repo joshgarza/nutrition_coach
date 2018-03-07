@@ -13,6 +13,21 @@ from calories_generator import MacrosGenerator
 
 auth = HTTPBasicAuth()
 
+def send_msg(subject, body, recipients=["josh@sf-iron.com"]):
+    try:
+        msg = Message(
+                  sender=app.config['MAIL_USERNAME'],
+                  subject=subject,
+                  body=body,
+                  recipients=recipients)
+        mail.send(msg)
+    except Exception as e:
+        print(e)
+
+def generate_activation_url(user):
+    activation_key = user.generate_activation_key()
+    return "http://localhost:8080/#/activate/" + activation_key
+
 @auth.verify_password
 def verify_password(email_or_token, password):
     user_id = User.verify_auth_token(email_or_token)
@@ -50,14 +65,9 @@ def new_user():
             # user.hash_password(password)
             db.session.add(user)
             db.session.commit()
-            activation_key = user.generate_activation_key()
-            activation_url = "http://localhost:8081/activate/" + activation_key
-            msg = Message(
-                              sender=app.config['MAIL_USERNAME'],
-                              subject='testing',
-                              body='Activation URL: ' + activation_url,
-                              recipients=["josh@sf-iron.com"])
-            mail.send(msg)
+            activation_url = generate_activation_url(user)
+
+            send_msg('Activate your account', 'Activation URL: ' + activation_url)
             goal = Goals(user_id = user.id)
             db.session.add(goal)
             db.session.commit()
@@ -66,7 +76,7 @@ def new_user():
             print(e)
             abort(422)
 
-@app.route("/activate/<activation_key>")
+@app.route("/user-activation/<activation_key>")
 def activate_user(activation_key):
     user_id = User.verify_activation_key(activation_key)
     # print(user_id)
@@ -80,6 +90,21 @@ def activate_user(activation_key):
         return jsonify({'user_id': user.id})
     else:
         abort(400)
+
+@app.route('/user-activation', methods=['POST'])
+def resend_email():
+    email = request.json.get('email')
+    try:
+        user = User.query.filter_by(email=email).first()
+        if user:
+            send_msg('Activate your account', 'Activation URL: ' + generate_activation_url(user))
+            return jsonify({'user_id': user.id})
+    except Exception as e:
+        print(e)
+        abort(401)
+
+
+
 
 
 
